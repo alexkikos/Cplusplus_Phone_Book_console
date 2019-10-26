@@ -14,6 +14,29 @@ using namespace std;
 #include "StringsChar.h"
 
 
+
+
+
+
+
+
+
+
+
+bool MinMax(int a, int b)
+{
+	return (a > b) ? true : false;
+}
+
+bool MaxMin(int a, int b)
+{
+	return (a < b) ? true : false;
+}
+
+
+
+
+
 template <class T>
 void SortNamesInArr2D(T**& a, bool(*method)(int a, int b) = MinMax)
 {
@@ -41,7 +64,7 @@ void SortNamesInArr2D(T**& a, bool(*method)(int a, int b) = MinMax)
 
 
 template <class T>
-void Transportirovanie2D(T**& a, int& row, int& col)
+void Transportirovanie2D(T**& main_array, int& row, int& col)
 {
 	int col1 = row;
 	int row1 = col;
@@ -51,11 +74,11 @@ void Transportirovanie2D(T**& a, int& row, int& col)
 	{
 		for (int j = 0; j < col1; j++)
 		{
-			to_transP[i][j] = a[j][i];
+			to_transP[i][j] = main_array[j][i];
 		}
 	}
-	FreeMemoryArr2D(a);
-	a = to_transP;
+	FreeMemoryArr2D(main_array);
+	main_array = to_transP;
 	row = row1;
 	col = col1;
 }
@@ -67,18 +90,18 @@ void Transportirovanie2D(T**& a, int& row, int& col)
 
 
 template <class T>
-void AddRowArr2D(T**& a, int& row, T* b = nullptr)
+void AddRowArr2D(T**& main_array, int& row, T* row_what_need_add = nullptr)
 {
-	if (strlen(b) > 0)
+	if (strlen(row_what_need_add) > 0)
 	{
 		T** p = new T * [row + 1];
 		for (int i = 0; i < row; i++)
 		{
-			p[i] = a[i];
+			p[i] = main_array[i];
 		}
-		p[row] = b;// new T = [col];
-		delete[]a;
-		a = p;
+		p[row] = row_what_need_add;// new T = [col];
+		delete[]main_array;
+		main_array = p;
 		row++;
 	}
 }
@@ -107,45 +130,42 @@ void ShowArray2DStringName(T**& a, int whereplace_x, int whereplace_y, int colte
 			}
 		}
 	}
-
 }
 
-//поиск пользователя или номера телефона -- вывожу всю строку, тк нет смысл найти пользователя и не видеть его тел и наоборот
+//поиск пользователя или номера телефона -- вывожу всю строку, тк нет смысла искать и находить пользователя и не видеть его тел и наоборот
 void PhoneAndUser(char**& a, int where_place_x, int where_place_y, int color_t, int color_b)
 {
 	setcolor(color_t, color_b);
-	char* name = new char[100];
+	char* name_what_need_find = new char[100];
 	cout << "Введите имя для поиска: ";
-	gets_s(name, 100);
+	gets_s(name_what_need_find, 100);
 	int row = _msize(a) / sizeof(int);
 	int count = 0;
-	char* temp = nullptr;
+	char* find_overlap = nullptr;
 	bool check = true;
 	while (count != row)
 	{
-		if (strstr(a[count], name))
+		if (strstr(a[count], name_what_need_find))
 		{
-			temp = strstr(a[count], name);
-			char* tmp = new char[100];
-			strncpy(tmp, a[count], strlen(a[count]) - strlen(temp));
-			tmp[strlen(a[count]) - strlen(temp)] = '\0';
-			strcat(tmp, temp);
+			find_overlap = strstr(a[count], name_what_need_find);
+			char* temp_new_string = new char[100];
+			strncpy(temp_new_string, a[count], strlen(a[count]) - strlen(find_overlap));
+			temp_new_string[strlen(a[count]) - strlen(find_overlap)] = '\0';
+			strcat(temp_new_string, find_overlap);
 			gotoxy(where_place_x, where_place_y += 1);
-			if (temp > 0) cout << "Найден контакт: " << tmp;
+			if (find_overlap > 0) cout << "Найден контакт: " << temp_new_string;
 			cout << endl;
 			if (check) check = false;
-			delete[] tmp;
+			delete[] temp_new_string;
 		}
 		count++;
-
-
 	}
 	if (check)
 	{
 		gotoxy(where_place_x, where_place_y += 3);
 		cout << "Контактов не найдено!";
 	}
-	delete[] name;
+	delete[] name_what_need_find;
 }
 
 
@@ -161,7 +181,6 @@ bool ChangeNameInBook(char**& a, char* whatfind, char* whatchange, int where_pla
 		char* temp = nullptr;
 		while (count != row)
 		{
-
 			while (strstr(a[count], whatfind) > 0)
 			{	
 				char* newv = new char[200];
@@ -174,8 +193,7 @@ bool ChangeNameInBook(char**& a, char* whatfind, char* whatchange, int where_pla
 				if (result == false) result = true;		
 				delete[] a[count];
 				a[count] = newv;
-			}		
-	
+			}	
 			count++;
 		}
 	}
@@ -199,7 +217,7 @@ start:
 	int numbcount = 0;
 	int symvolcount = 0;
 	int size_book = 100;
-	int row = 0, col, row_trans, col_trans, where_y_printe;
+	int row = 0, col, row_trans, col_trans, where_y_printe, where_x_printe;
 	char** adressbook = nullptr;
 	int** trasport = nullptr;
 	char pos;
@@ -237,8 +255,7 @@ rep:
 	AddNameInButton("Ожидаю ввод", "", 26, 2, Red, 14);
 	user_enter = _getch();
 	if (user_enter >=49 and user_enter <=56 or user_enter == '*' or user_enter == 27)
-	{
-	
+	{	
 		ClearWorkSpace2(24, 2, 1,14, 0, 14);
 		AddNameInButton("Выполняю", "", 26, 2, Red, 14);
 		switch (user_enter)
@@ -251,11 +268,11 @@ rep:
 			setcolor(White, 9);
 			gotoxy(88, 6);
 			cout << "Введите данные: ";
-			names = new char[size_book];
+			names = new char[size_book];//не чистим тк эти адреса лежат в массиве
 			gets_s(names, size_book);
 			AddRowArr2D(adressbook, row, names);
 			ShowArray2DStringName(adressbook, 6, 5, White, 3);
-			ShoInfoPanel(adressbook, numbcount, symvolcount);
+			ShoInfoPanel(adressbook, numbcount, symvolcount);	
 			break;
 		case '2':
 		case '3':
@@ -271,9 +288,14 @@ rep:
 			AddButton(80, 19, 86, 5, White, 8);
 			AddButton(7, 1, 74, 24, White, 3);//полоса состояния
 			SortNamesInArr2D(adressbook); 
-			ShowArray2DStringName(adressbook, 6, 5, White, 3); break;
+			ShowArray2DStringName(adressbook, 6, 5, White, 3);
+			setcolor(White, 8);
+			gotoxy(88, 6);
+			cout << "Выполнено!";
+			break;
 		case '5':
-			where_y_printe = 6;
+			where_y_printe = 6;	
+			where_x_printe = 88;
 			ClearWorkSpace2(88, 6, 18, 78, 0, 3);
 			AddButton(80, 19, 86, 5, White, 4);
 			AddButton(7, 1, 99, 24, White, 3);//полоса состояния
@@ -289,10 +311,10 @@ rep:
 				gotoxy(88, where_y_printe+=1);
 				cout << "Большой диапазон! (7*7 its ok)";
 				break;
-			}
+			}	
 			CreateArr2D(trasport, row_trans, col_trans);
 			AddArray2D(trasport, row_trans, col_trans);
-			ShowArray2D(trasport, row_trans, col_trans, 88, 8);
+			ShowArray2D(trasport, row_trans, col_trans, 88, 8);		
 			Transportirovanie2D(trasport, row_trans, col_trans);
 			ShowArray2D(trasport, row_trans, col_trans, 115 + ((_msize(trasport) / sizeof(int)) * 2), 6 + _msize(trasport) / sizeof(int));
 			ShoInfoPanel(trasport, numbcount, symvolcount, true, col_trans);
@@ -302,22 +324,24 @@ rep:
 			AddButton(80, 19, 86, 5, White, 2);
 			AddButton(7, 1, 135, 24, White, 3);//полоса состояния
 			setcolor(White, 2);
+			where_y_printe = 6;
+			gotoxy(88, where_y_printe);
 			if (row > 0)
-			{
-				where_y_printe = 6;		
-				gotoxy(88, where_y_printe);
+			{					
 				cout << "Введите строку для удаления: ";
 				pos = _getch();
 				ConvertCharToInt(pos);
-				if (pos+1 <= row and pos >= 0)
+				if (pos + 1 <= row and pos >= 0)
 				{
 					DeleteRowArr2DPos(adressbook, row, pos);
 				}
-				else 		cout << "Не верный индекс!";	
+				else 		
+					cout << " Не верный запрос!";
 				ClearWorkSpace(6, 6, 16, White, 3);
 				ShowArray2DStringName(adressbook, 6, 5, White, 3);
 				ShoInfoPanel(adressbook, numbcount, symvolcount);
 			}
+			else cout << "Значений в книгe нет!";
 			break;
 		case '7':
 			where_y_printe = 6;
@@ -353,16 +377,13 @@ rep:
 			delete[] whatfind;
 			delete[] whatchange;
 			break;
-		case '*': setcolor(White, Black);	ClearWorkSpace(0, 0,100, White, 3);  goto start;  break;
+		case '*': setcolor(White, Black);	ClearWorkSpace2(0, 0,40,300, White,Black);  goto start;  break;
 		default: gotoxy(0, 35); exit(0);	break;
 		}
-
 	}
 	goto rep;
-
 	system("pause");
 	return 0;
-
 }
 
 
